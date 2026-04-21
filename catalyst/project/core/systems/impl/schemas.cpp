@@ -10,8 +10,8 @@ namespace systems {
 			return 0;
 		}
 
-		const auto field_count = g::memory.read<std::int16_t>( class_info + 0x1c );
-		const auto fields_ptr = g::memory.read<std::uintptr_t>( class_info + 0x28 );
+		const auto field_count = g::memory.read<std::int16_t>( class_info + 0x24 );
+		const auto fields_ptr = g::memory.read<std::uintptr_t>( class_info + 0x30 );
 
 		if ( field_count <= 0 || !fields_ptr )
 		{

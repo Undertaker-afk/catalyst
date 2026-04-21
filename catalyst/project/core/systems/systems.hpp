@@ -141,7 +141,7 @@ namespace systems {
 				math::quaternion rotation{};
 			};
 
-			std::array<bone, static_cast< std::size_t >( 28 )> bones{};
+			std::array<bone, static_cast< std::size_t >( 27 )> bones{};
 
 			[[nodiscard]] bool is_valid( ) const;
 			[[nodiscard]] math::vector3 get_position( std::uint32_t id ) const;
@@ -192,7 +192,7 @@ namespace systems {
 		[[nodiscard]] int hitgroup_from_hitbox( int hitbox ) const;
 
 	private:
-		static constexpr int k_bone_map[ ]{ 6, -1, 0, 1, 2, 3, 4, 22, 25, 23, 26, 24, 27, 10, 15, 9, 8, 14, 13 };
+		static constexpr int k_bone_map[ ]{ 7, -1, 1, 2, 3, 4, 6, 22, 25, 23, 26, 24, 27, 10, 15, 9, 8, 14, 13 };
 	};
 
 	class collector

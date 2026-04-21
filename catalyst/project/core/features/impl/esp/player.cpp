@@ -142,26 +142,27 @@ namespace features::esp {
 	{
 		const auto& color = is_visible ? cfg.visible_color : cfg.occluded_color;
 
-		constexpr std::array<std::pair<std::uint32_t, std::uint32_t>, 18> connections
+		constexpr std::array<std::pair<std::uint32_t, std::uint32_t>, 19> connections
 		{ {
-			{ 6, 5 },
-			{ 5, 4 },
+			{ 7, 6 },
+			{ 6, 4 },
 			{ 4, 3 },
 			{ 3, 2 },
 			{ 2, 1 },
-			{ 1, 0 },
 			{ 4, 8 },
 			{ 8, 9 },
 			{ 9, 10 },
-			{ 4, 13 },
+			{ 10, 11 },
+			{ 4, 12 },
+			{ 12, 13 },
 			{ 13, 14 },
 			{ 14, 15 },
-			{ 0, 22 },
-			{ 22, 23 },
-			{ 23, 24 },
-			{ 0, 25 },
-			{ 25, 26 },
-			{ 26, 27 },
+			{ 1, 17 },
+			{ 17, 18 },
+			{ 18, 19 },
+			{ 1, 20 },
+			{ 20, 21 },
+			{ 21, 22 },
 		} };
 
 		for ( const auto& [from, to] : connections )

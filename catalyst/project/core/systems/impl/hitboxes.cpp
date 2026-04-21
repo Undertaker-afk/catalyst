@@ -6,7 +6,7 @@ namespace systems {
 	{
 		set result{};
 
-		const auto model_handle = g::memory.read<std::uintptr_t>( game_scene_node + 0x200 );
+		const auto model_handle = g::memory.read<std::uintptr_t>( game_scene_node + 0x210 );
 		if ( !model_handle )
 		{
 			return result;

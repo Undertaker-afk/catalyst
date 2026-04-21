@@ -120,19 +120,19 @@ namespace systems {
 			return 0;
 		}
 
-		const auto entity_class_info = g::memory.read<std::uintptr_t>( entity_identity + 0x8 );
-		if ( !entity_class_info )
+		const auto class_info = g::memory.read<std::uintptr_t>( entity_identity + 0x8 );
+		if ( !class_info )
 		{
 			return 0;
 		}
 
-		const auto schema_name_ptr = g::memory.read<std::uintptr_t>( entity_class_info + 0x8 );
-		if ( !schema_name_ptr )
+		const auto name_container = g::memory.read<std::uintptr_t>( class_info + 0x8 );
+		if ( !name_container )
 		{
 			return 0;
 		}
 
-		const auto schema_name = g::memory.read<std::uintptr_t>( schema_name_ptr );
+		const auto schema_name = g::memory.read<std::uintptr_t>( name_container + 0x8 );
 		if ( !schema_name )
 		{
 			return 0;
