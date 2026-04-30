@@ -51,19 +51,21 @@ namespace settings {
 
 		struct group_config
 		{
+			bool override_global{ false };
 			aimbot aimbot{};
 			triggerbot triggerbot{};
 			other other{};
 		};
 
-		static constexpr std::uint32_t k_group_count{ 6 };
+		static constexpr std::uint32_t k_group_count{ 7 }; // +1 for global
 
 		std::array<group_config, k_group_count> groups{};
 
 		group_config& get( std::uint32_t weapon_type )
 		{
-			const auto idx = weapon_type - cstypes::pistol;
-			return this->groups[ idx < k_group_count ? idx : 2 ];
+			const auto idx = weapon_type - cstypes::pistol + 1;
+			auto& group = this->groups[ idx < k_group_count ? idx : 3 ];
+			return group.override_global ? group : this->groups[ 0 ];
 		}
 
 		const group_config& get( std::uint32_t weapon_type ) const
@@ -261,6 +263,8 @@ namespace settings {
 			bool local_only{ true };
 			zdraw::rgba color{ 170, 175, 220, 200 };
 		} m_grenades{};
+
+		bool bhop{ true };
 
 		bool limit_fps{ true };
 		int fps_limit{ 240 };

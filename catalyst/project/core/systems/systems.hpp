@@ -419,6 +419,7 @@ namespace systems {
 	inline hitboxes g_hitboxes{};
 	inline collector g_collector{};
 	inline bvh g_bvh{};
+	inline hooks g_hooks{};
 
 } // namespace systems
 

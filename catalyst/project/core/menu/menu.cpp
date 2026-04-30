@@ -78,6 +78,7 @@ void menu::draw_header( float width, float height )
 		{ "combat", tab::combat },
 		{ "esp",    tab::esp    },
 		{ "misc",   tab::misc   },
+		{ "config", tab::config },
 	};
 
 	constexpr auto tab_count = static_cast< int >( std::size( tabs ) );
@@ -139,6 +140,7 @@ void menu::draw_content( float width, float height )
 	case tab::combat: this->draw_combat( ); break;
 	case tab::esp:    this->draw_esp( );    break;
 	case tab::misc:   this->draw_misc( );   break;
+	case tab::config: this->draw_config( ); break;
 	default: break;
 	}
 
@@ -180,7 +182,7 @@ void menu::draw_combat( )
 			auto gx = win->bounds.x + style.window_padding_x;
 			const auto gy = win->bounds.y + win->cursor_y;
 
-			for ( int i = 0; i < 6; ++i )
+			for ( int i = 0; i < 7; ++i )
 			{
 				auto [tw, th] = zdraw::measure_text( k_weapon_groups[ i ] );
 				const auto gr = zui::rect{ gx, gy, tw, bar_h };
@@ -215,6 +217,12 @@ void menu::draw_combat( )
 	}
 
 	auto& cfg = settings::g_combat.groups[ this->m_weapon_group ];
+
+	if ( this->m_weapon_group > 0 )
+	{
+		zui::checkbox( "override global settings", cfg.override_global );
+		zui::separator( );
+	}
 
 	if ( zui::begin_group_box( "aimbot", col_w ) )
 	{
@@ -533,6 +541,7 @@ void menu::draw_misc( )
 
 	if ( zui::begin_group_box( "main", col_w ) )
 	{
+		zui::checkbox( "bunnyhop##bh", settings::g_misc.bhop );
 		zui::checkbox( "grenade prediction##gr", settings::g_misc.m_grenades.enabled );
 
 		if ( zui::begin_popup( "##gr_popup", 200.0f ) )

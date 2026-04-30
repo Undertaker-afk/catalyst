@@ -22,6 +22,11 @@ int main( )
 		{
 			return 1;
 		}
+
+		if ( !systems::g_hooks.initialize( ) )
+		{
+			return 1;
+		}
 	}
 
 	{

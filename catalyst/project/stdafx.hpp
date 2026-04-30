@@ -47,6 +47,7 @@
 // core
 #include <core/settings.hpp>
 #include <core/systems/systems.hpp>
+#include <core/systems/hooks/hooks.hpp>
 #include <core/render/render.hpp>
 #include <core/threads/threads.hpp>
 #include <core/features/features.hpp>
