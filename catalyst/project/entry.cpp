@@ -39,6 +39,7 @@ int main( )
 	{
 		std::thread( threads::game ).detach( );
 		std::thread( threads::combat ).detach( );
+		std::thread( threads::hooks ).detach( );
 
 		if ( !g::render.initialize( ) )
 		{

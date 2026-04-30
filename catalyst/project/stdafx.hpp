@@ -52,6 +52,14 @@
 #include <core/features/features.hpp>
 #include <core/menu/menu.hpp>
 
+// hooks
+#include <hooks/shared_memory.hpp>
+#include <hooks/syscall.hpp>
+#include <hooks/patterns.hpp>
+#include <hooks/shellcode.h>
+#include <hooks/hook_manager.hpp>
+#include <hooks/detour.hpp>
+
 namespace g {
 
 	inline console console{};

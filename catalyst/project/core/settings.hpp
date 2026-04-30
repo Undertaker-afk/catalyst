@@ -266,8 +266,91 @@ namespace settings {
 		int fps_limit{ 240 };
 	};
 
+	struct hooks
+	{
+		struct bhop
+		{
+			bool enabled{ false };
+			int hit_chance{ 100 };
+			int min_hops{ 0 };
+			int max_hops{ 0 };
+		};
+
+		struct antiaim
+		{
+			bool enabled{ false };
+			float pitch{ 0.0f };
+			float yaw_offset{ 0.0f };
+			float yaw_jitter{ 0.0f };
+			bool desync{ false };
+			float desync_amt{ 58.0f };
+		};
+
+		struct silent_aim
+		{
+			bool enabled{ false };
+			float fov{ 5.0f };
+			bool autowall{ false };
+			float min_damage{ 10.0f };
+		};
+
+		struct double_tap
+		{
+			bool enabled{ false };
+			int shift_ticks{ 13 };
+		};
+
+		struct chams
+		{
+			bool enabled{ false };
+			bool visible_only{ true };
+			bool wireframe{ false };
+			bool flat{ false };
+			zdraw::rgba visible_color{ 255, 75, 75, 255 };
+			zdraw::rgba occluded_color{ 75, 75, 255, 128 };
+		};
+
+		struct world_mod
+		{
+			bool no_smoke{ false };
+			bool no_flash{ false };
+			bool no_scope{ false };
+			bool night_mode{ false };
+			int ambient_r{ 0 };
+			int ambient_g{ 0 };
+			int ambient_b{ 0 };
+		};
+
+		struct view
+		{
+			bool fov_override{ false };
+			float fov{ 90.0f };
+			bool third_person{ false };
+			float tp_distance{ 150.0f };
+		};
+
+		struct viewmodel
+		{
+			bool override_fov{ false };
+			float fov{ 68.0f };
+			float offset_x{ 0.0f };
+			float offset_y{ 0.0f };
+			float offset_z{ 0.0f };
+		};
+
+		bhop bhop{};
+		antiaim antiaim{};
+		silent_aim silent_aim{};
+		double_tap double_tap{};
+		chams chams{};
+		world_mod world_mod{};
+		view view{};
+		viewmodel viewmodel{};
+	};
+
 	inline combat g_combat{};
 	inline esp g_esp{};
 	inline misc g_misc{};
+	inline hooks g_hooks{};
 
 } // namespace settings
