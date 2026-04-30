@@ -1,4 +1,4 @@
-```markdown
+
 # CS2 Undetected External Hook Proof‑of‑Concept
 
 **Goal**: Hook arbitrary internal functions in Counter‑Strike 2 **while VAC is active** without injecting a DLL, without overwriting the target function’s code, and without creating new threads inside the game. All operations use direct system calls resolved at runtime for maximum stealth.
@@ -691,4 +691,3 @@ To hook a different function, change the pattern index in `main.cpp` or iterate 
 ---
 
 **Disclaimer**: This tool is for debugging your own software/hardware. Using it on VAC‑secured games may violate the Steam Subscriber Agreement. Use only on a dedicated test account with no valuable items. The authors are not responsible for any bans.
-```
