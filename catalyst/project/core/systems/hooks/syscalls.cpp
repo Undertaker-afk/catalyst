@@ -1,24 +1,21 @@
 #include <stdafx.hpp>
 #include "syscalls.hpp"
+#include <mutex>
 
 namespace systems {
 
 	std::uint16_t syscalls::resolve( std::string_view name )
 	{
-		// Use the implementation from VeilHookEX/Syscall.cpp but integrated into catalyst
-		// For brevity, I'll use the core logic here.
-
-		const auto hash = [ & ]( std::string_view str ) -> std::uint64_t
-		{
-			std::uint64_t h = 0xcbf29ce484222325ULL;
-			for ( auto c : str )
-				h = ( h ^ static_cast< std::uint64_t >( c ) ) * 0x100000001b3ULL;
-			return h;
-		}( name );
+		const auto hash = fnv1a::hash( name.data() );
 
 		static std::unordered_map<std::uint64_t, std::uint16_t> cache;
-		if ( cache.contains( hash ) )
-			return cache[ hash ];
+		static std::mutex cache_mutex;
+
+		{
+			std::lock_guard lock( cache_mutex );
+			if ( cache.contains( hash ) )
+				return cache[ hash ];
+		}
 
 		const auto ntdll = g::memory.get_module( "ntdll.dll" );
 		if ( !ntdll ) return 0;
@@ -37,23 +34,19 @@ namespace systems {
 			const auto name_rva = g::memory.read<std::uint32_t>( names + i * 4 );
 			const auto name_str = g::memory.read_string( ntdll + name_rva );
 
-			if ( [ & ]( std::string_view str ) -> std::uint64_t {
-				std::uint64_t h = 0xcbf29ce484222325ULL;
-				for ( auto c : str )
-					h = ( h ^ static_cast< std::uint64_t >( c ) ) * 0x100000001b3ULL;
-				return h;
-			}( name_str ) == hash )
+			if ( fnv1a::hash( name_str.c_str() ) == hash )
 			{
 				const auto ordinal = g::memory.read<std::uint16_t>( ordinals + i * 2 );
 				const auto func_rva = g::memory.read<std::uint32_t>( functions + ordinal * 4 );
 				const auto stub = ntdll + func_rva;
 
-				// Scan for mov eax, imm32 (0xB8)
 				for ( std::uint32_t j = 0; j < 32; ++j )
 				{
 					if ( g::memory.read<std::uint8_t>( stub + j ) == 0xB8 )
 					{
 						const auto ssn = g::memory.read<std::uint16_t>( stub + j + 1 );
+
+						std::lock_guard lock( cache_mutex );
 						cache[ hash ] = ssn;
 						return ssn;
 					}

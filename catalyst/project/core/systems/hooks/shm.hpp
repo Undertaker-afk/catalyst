@@ -6,25 +6,26 @@ namespace systems {
 
 	namespace shm {
 
+		static constexpr std::size_t k_max_hooks = 15;
+
 		struct hook_entry
 		{
 			std::atomic<bool> active;
 			std::uintptr_t address;
-			std::uint8_t data[ 256 ]; // For parameters
 		};
 
 		struct shared_data
 		{
-			std::atomic<std::uint32_t> magic;
-			std::atomic<bool> shellcode_ready;
-			hook_entry hooks[ 15 ];
-
-			// Feature specific data
+			// Features at the beginning for easy assembly access
 			struct {
 				bool bhop_enabled;
 				bool silent_aim;
 				float view_angles[ 3 ];
 			} features;
+
+			std::uint32_t magic;
+			std::atomic<bool> shellcode_ready;
+			hook_entry hooks[ k_max_hooks ];
 		};
 
 	}

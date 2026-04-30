@@ -1,4 +1,5 @@
 #pragma once
+#include "shm.hpp"
 
 namespace systems {
 
@@ -22,26 +23,18 @@ namespace systems {
 		bool enable( const std::string& name );
 		bool disable( const std::string& name );
 
-	private:
-		struct shared_data
-		{
-			std::atomic<std::uint32_t> write_index;
-			std::atomic<std::uint32_t> read_index;
-			// Expand this for more features
-			std::uint8_t buffer[ 0x1000 ];
-		};
+		void update_features( );
 
+	private:
 		bool setup_shared_memory( );
 		bool inject_shellcode( );
 		bool hijack_thread( std::uintptr_t entry_point );
 
 		std::vector<hook_data> m_hooks{};
 		void* m_shared_memory_handle{};
-		shared_data* m_shared_data{};
+		shm::shared_data* m_shared_data{};
 		std::uintptr_t m_remote_shellcode_base{};
 		bool m_initialized{ false };
 	};
-
-	inline hooks g_hooks{};
 
 } // namespace systems

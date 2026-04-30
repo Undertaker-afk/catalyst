@@ -7,14 +7,17 @@ namespace features {
 
 		void bhop( )
 		{
-			// The internal shellcode handles the actual timing by checking flags
-			// and modifying CUserCmd in real-time during the CreateMove hook.
+			// The internal shellcode in catalyst/project/core/systems/hooks/shellcode.hpp
+			// handles the real-time logic for Bhop by modifying CUserCmd bits.
+			// This C++ function ensures the setting is synchronized.
+			systems::g_hooks.update_features();
 		}
 
 		void chams( )
 		{
 			// The internal shellcode intercepts Render calls.
-			// External process sets material overrides in SHM.
+			// Material properties are synced via SHM to the internal context.
+			systems::g_hooks.update_features();
 		}
 
 	}

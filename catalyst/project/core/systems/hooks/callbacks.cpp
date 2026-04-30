@@ -4,18 +4,13 @@
 
 namespace systems {
 
+	// This file now acts as the bridge for logic triggered by internal hooks
+	// In a hybrid external/internal, we process data from SHM.
+
 	void hooks::on_createmove( void* rcx, void* rdx )
 	{
-		// This will be called (ideally) from the internal context or
-		// via data captured by the hook.
-
-		// For external catalyst, we might just use the hook to sync timing
-		// or read the CUserCmd that we intercepted.
-
-		if ( settings::misc::bhop )
-		{
-			// Bhop logic using intercepted CUserCmd
-		}
+		// Internal logic (in shellcode) modifies CUserCmd for Bhop
+		// External process can read/write SHM to influence this.
 	}
 
 } // namespace systems
