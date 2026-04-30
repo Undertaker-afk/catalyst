@@ -12,7 +12,7 @@ namespace systems {
 		if ( it->enabled ) return true;
 
 		const auto index = std::distance( this->m_hooks.begin(), it );
-		if ( index >= 15 ) return false;
+		if ( index >= shm::k_max_hooks ) return false;
 
 		// Write address to shellcode slot
 		::WriteProcessMemory( g::memory.handle(), reinterpret_cast<void*>( this->m_remote_shellcode_base + 0x08 + (index * 8) ), &it->target_address, 8, nullptr );
