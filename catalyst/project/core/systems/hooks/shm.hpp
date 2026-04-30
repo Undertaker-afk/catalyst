@@ -16,12 +16,19 @@ namespace systems {
 
 		struct shared_data
 		{
-			// Features at the beginning for easy assembly access
 			struct {
 				bool bhop_enabled;
 				bool silent_aim;
+				bool anti_aim;
+				bool double_tap;
 				float view_angles[ 3 ];
+				bool chams_enabled;
+				float chams_color[ 4 ];
 			} features;
+
+			struct {
+				std::uintptr_t local_pawn;
+			} data;
 
 			std::uint32_t magic;
 			std::atomic<bool> shellcode_ready;

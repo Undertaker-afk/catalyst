@@ -32,7 +32,6 @@ namespace systems {
 			return false;
 		}
 
-		// Core hooks
 		this->add( "CreateMove", "client.dll", {0x48,0x8B,0xC4,0x4C,0x89,0x40,0x00,0x48,0x89,0x48,0x00,0x55,0x53,0x41,0x54}, "xxxxx?xx?xxx" );
 		this->add( "Render", "scenesystem.dll", {0x48,0x8B,0xC4,0x53,0x57,0x41,0x54}, "xxxxxxx" );
 
@@ -92,6 +91,23 @@ namespace systems {
 		return true;
 	}
 
+	bool hooks::enable( const std::string& name )
+	{
+		auto it = std::find_if( this->m_hooks.begin(), this->m_hooks.end(), [ & ]( const auto& h ) { return h.name == name; } );
+		if ( it == this->m_hooks.end() || it->enabled ) return false;
+
+		const auto index = std::distance( this->m_hooks.begin(), it );
+		if ( index >= shm::k_max_hooks ) return false;
+
+		::WriteProcessMemory( g::memory.handle(), reinterpret_cast<void*>( this->m_remote_shellcode_base + 0x08 + (index * 8) ), &it->target_address, 8, nullptr );
+
+		DWORD old;
+		::VirtualProtectEx( g::memory.handle(), reinterpret_cast<void*>( it->target_address ), 1, PAGE_EXECUTE_READ | PAGE_GUARD, &old );
+
+		it->enabled = true;
+		return true;
+	}
+
 	bool hooks::setup_shared_memory( )
 	{
 		std::string name = "Local\\";
@@ -100,7 +116,8 @@ namespace systems {
 		std::uniform_int_distribution<> dist( 0, sizeof( charset ) - 2 );
 		for ( int i = 0; i < 16; ++i ) name += charset[ dist( rng ) ];
 
-		this->m_shared_memory_handle = ::CreateFileMappingA( INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, sizeof( shm::shared_data ), name.c_str( ) );
+		LARGE_INTEGER section_size = { .QuadPart = sizeof( shm::shared_data ) };
+		this->m_shared_memory_handle = ::CreateFileMappingA( INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, section_size.HighPart, section_size.LowPart, name.c_str( ) );
 		if ( !this->m_shared_memory_handle )
 			return false;
 
@@ -112,7 +129,6 @@ namespace systems {
 			return false;
 		}
 
-		// Initialize SHM without memset
 		auto* data = static_cast<shm::shared_data*>(raw_view);
 		data->magic = 0xCA7A1357;
 		data->shellcode_ready.store(false);
@@ -197,14 +213,16 @@ namespace systems {
 		this->m_remote_shellcode_base = reinterpret_cast<std::uintptr_t>( ::VirtualAllocEx( g::memory.handle( ), nullptr, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE ) );
 		if ( !this->m_remote_shellcode_base ) return false;
 
-		// Correct way to share memory: NtCreateSection + NtMapViewOfSection
-		// For external catalyst, we can use a randomized name and have the shellcode resolve it.
-		// For now, we will allocate a buffer and use WriteProcessMemory for settings sync.
-		const auto remote_shm = reinterpret_cast<std::uintptr_t>( ::VirtualAllocEx( g::memory.handle(), nullptr, sizeof(shm::shared_data), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE ) );
+		HANDLE remote_handle;
+		if ( !::DuplicateHandle( ::GetCurrentProcess( ), this->m_shared_memory_handle, g::memory.handle( ), &remote_handle, 0, FALSE, DUPLICATE_SAME_ACCESS ) )
+			return false;
+
+		const auto remote_shm_addr = reinterpret_cast<std::uintptr_t>( ::VirtualAllocEx( g::memory.handle( ), nullptr, sizeof( shm::shared_data ), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE ) );
+		if ( !remote_shm_addr ) return false;
 
 		std::vector<std::uint8_t> buffer( std::begin( shellcode::veh_shellcode ), std::end( shellcode::veh_shellcode ) );
 
-		std::memcpy( buffer.data( ) + detail::offset_shared_mem, &remote_shm, 8 );
+		std::memcpy( buffer.data( ) + detail::offset_shared_mem, &remote_shm_addr, 8 );
 		std::memcpy( buffer.data( ) + detail::offset_ssn, &nt_protect_ssn, 2 );
 		std::memcpy( buffer.data( ) + detail::offset_rtl_add_veh, &rtl_add_veh, 8 );
 
